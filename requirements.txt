@@ -1,0 +1,27 @@
+
+# Data Manipulation and Analysis
+pandas
+numpy
+
+# Machine Learning and Model Training
+scikit-learn
+xgboost
+lightgbm
+
+# AWS SDK for Python - For interacting with AWS services like S3, Glue, Kinesis, SageMaker
+boto3
+sagemaker
+
+# Data Visualization
+matplotlib
+seaborn
+
+# AWS CLI - Command Line Interface for AWS management
+awscli
+
+# Orchestration and Workflow Management
+pydot
+graphviz
+
+# Miscellaneous
+joblib   # For model serialization
