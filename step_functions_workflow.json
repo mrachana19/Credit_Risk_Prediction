@@ -1,0 +1,54 @@
+
+{
+  "Comment": "Credit Risk Assessment Workflow",
+  "StartAt": "DataIngestion",
+  "States": {
+    "DataIngestion": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-west-2:123456789012:function:DataIngestionFunction",
+      "Next": "ModelTraining"
+    },
+    "ModelTraining": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sagemaker:createTrainingJob.sync",
+      "Parameters": {
+        "TrainingJobName.$": "States.Format('CreditRisk-Training-{}', $.ExecutionName)",
+        "AlgorithmSpecification": {
+          "TrainingImage": "763104351884.dkr.ecr.us-west-2.amazonaws.com/sklearn:0.23-1-cpu-py3",
+          "TrainingInputMode": "File"
+        },
+        "RoleArn": "arn:aws:iam::123456789012:role/service-role/AmazonSageMaker-ExecutionRole",
+        "InputDataConfig": [
+          {
+            "ChannelName": "train",
+            "DataSource": {
+              "S3DataSource": {
+                "S3DataType": "S3Prefix",
+                "S3Uri": "s3://your-s3-bucket/train",
+                "S3DataDistributionType": "FullyReplicated"
+              }
+            },
+            "ContentType": "text/csv"
+          }
+        ],
+        "OutputDataConfig": {
+          "S3OutputPath": "s3://your-s3-bucket/output"
+        },
+        "ResourceConfig": {
+          "InstanceType": "ml.m5.large",
+          "InstanceCount": 1,
+          "VolumeSizeInGB": 10
+        },
+        "StoppingCondition": {
+          "MaxRuntimeInSeconds": 3600
+        }
+      },
+      "Next": "ModelEvaluation"
+    },
+    "ModelEvaluation": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-west-2:123456789012:function:ModelEvaluationFunction",
+      "End": true
+    }
+  }
+}
